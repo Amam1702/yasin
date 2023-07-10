@@ -1,0 +1,116 @@
+
+/* .App-logo {
+  height: 40vmin;
+  pointer-events: none;
+} */
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+/* .App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+} */
+
+.App-link {
+  color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+
+.nav-sidebar {
+  text-align: left !important;
+}
+[class*=sidebar-dark-] {
+  background-color: #FFF !important;
+}
+[class*=sidebar-dark] .brand-link, [class*=sidebar-dark] .brand-link .pushmenu {
+  color: #000 !important;
+}
+.main-sidebar {
+  height: 100vh !important;
+}
+li.nav-item.menu-open,.sidebar-dark-primary .nav-sidebar>.nav-item>.nav-link.active, .sidebar-light-primary .nav-sidebar>.nav-item>.nav-link.active {
+  background-color: #0451a3 !important;
+  color: #f1f148 !important;
+}
+
+[class*=sidebar-dark-] .nav-treeview>.nav-item>.nav-link.active, [class*=sidebar-dark-] .nav-treeview>.nav-item>.nav-link.active:focus, [class*=sidebar-dark-] .nav-treeview>.nav-item>.nav-link.active:hover {
+  background-color:transparent !important;
+  color: #f1f148 !important;
+  border-radius: 8px !important;
+  margin: auto;
+}
+.content-wrapper {
+  background-color: #FFF !important;
+}
+.form-fieldset legend {
+  width: auto;
+  background-color: #FFF;
+  color: #0451a3 !important;
+  padding: 0px 10px;
+  font-size: 18px;
+}
+fieldset.form-fieldset {
+  border-top: 1px solid #0000001c !important;
+}
+.form-area .react-datepicker-wrapper {
+  width: 100%;
+}
+.content-wrapper {
+  background-color: #FFF !important;
+  border-left: 1px solid #EEE !important;
+}
+[class*=sidebar-dark] .brand-link {
+  border-bottom: 1px solid #EEE !important;
+}
+.main-header {
+  border-bottom: 1px solid #EEE !important;
+}
+.form-area label {
+  font-size: 14px;
+}
+.btn-primary{
+  background-color: #0451a3 !important;
+  border-color:#0451a3 !important
+}
+.loading {
+  position: fixed;
+  width: 100%;
+  top: 0px;
+  z-index: 9999;
+  background-color: rgba(0,0,0,0.5) !important;
+  left: 0;
+  text-align: center;
+  height: 100%;
+  color: #FFF;
+  padding-top: 23%;
+  font-size: 22px;
+}
+.nav-sidebar>.nav-item:hover>.nav-link {
+  color: #888 !important;
+}
+.nav-sidebar>.nav-item.menu-open >.nav-link {
+  color: #f1f148 !important;
+}
+.logout-btn{
+  height: 2.5rem;
+  position: relative;
+}
