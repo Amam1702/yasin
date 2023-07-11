@@ -1,7 +1,5 @@
 import React, { useEffect,useState } from 'react';
 import { useNavigate,useParams,Link } from 'react-router-dom';
-import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
 
 import { toast } from 'react-toastify';
 import axios from 'axios';
@@ -11,7 +9,6 @@ import PageLoader from '../PageLoader';
 const EditStation = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     // station_id: '',
@@ -49,8 +46,8 @@ const EditStation = () => {
           setFormData(response.data);
           setLoading(false);
       } catch (error) {
-          setError(error);
           setLoading(false);
+          toast.error('Something went wrong');
       }
   };
   const handleSubmit = (e) => {
@@ -84,7 +81,6 @@ const EditStation = () => {
     setFormErrors(errors);
 
     if (Object.keys(errors).length === 0) {
-        var postData = [formData] ;
         const headers = {
           'Content-Type': 'application/json',
           Authorization: 'Token '+localStorage.getItem("token"),
@@ -96,7 +92,7 @@ const EditStation = () => {
           console.log(response.data);
           var data = response.data;
           console.log(data);
-          if(data.status == 'Data Updated'){
+          if(data.status === 'Data Updated'){
             var is_created = true;
             if(is_created){
                toast.success('Record submitted successfully');
@@ -127,13 +123,13 @@ const EditStation = () => {
         .catch((error) => {
           // Handle any errors
           setLoading(false);
-          console.error('Error saving form data:', error);
+          toast.error('Something went wrong');
         });
     }
   };
   useEffect(() => {
     fetchStation(id);
-}, []);
+}, [id]);
   return (
     <div className="p-3">
       {loading &&<PageLoader />}

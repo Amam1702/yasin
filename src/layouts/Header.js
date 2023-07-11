@@ -1,7 +1,5 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-
 const Header = () => {
   const navigate = useNavigate();
   const handleLogout = () => {

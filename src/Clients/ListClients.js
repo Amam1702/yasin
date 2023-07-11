@@ -1,27 +1,40 @@
 import React, { useEffect, useState } from 'react';
 import Swal from 'sweetalert2';
 import { Link } from 'react-router-dom';
-import 'react-data-grid/lib/styles.css';
-import DataGrid from 'react-data-grid';
-import PageLoader from '../PageLoader';
-
+import Box from '@mui/material/Box';
+import { DataGrid } from '@mui/x-data-grid';
 import { toast } from 'react-toastify';
 import axios from 'axios';
 
+import PageLoader from '../PageLoader';
 const ListClients = () => {
-    const [records, setData] = useState(null);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
-    const [apiCalled, setApiCalled] = useState(false);
 
-  
+    const [records, setData] = useState([]);
+    const [loading, setLoading] = useState(true);
+    
+    const pageSize = 10; 
     const columns = [
-      { name: 'Client ID', key: 'client_id' },
-      { name: 'Client Name', key: 'client_ame' },
-      { name: 'Contact Name', key: 'contact_name' },
-      { name: 'Last Order Date', key: 'last_order_number' },
-      { name: 'Last Order Amount', key: 'last_order_amount' },
+      { headerName: 'Client ID', field: 'client_id', width: 160,  },
+      { headerName: 'Client Name', field: 'client_name', width: 160  },
+      { headerName: 'Contact Name', field: 'contact_name', width: 160  },
+      { headerName: 'Last Order Date', field: 'last_order_number', width: 160  },
+      { headerName: 'Last Order Amount', field: 'last_order_amount', width: 160  },
+      {
+        field: 'actions',
+        headerName: 'Actions',
+        width: 160,
+        sortable: false,
+        renderCell: (params) => {
+          return (
+            <div className='btn-group'>
+              <Link to={`/clients/edit/${params.row.client_id}`} className="btn btn-warning btn-sm mr-2"><i className="fa fa-edit"></i></Link>
+              <button onClick={() => deleteClient(params.row.client_id)} type='button' className="btn btn-danger btn-sm"><i className="fa fa-trash"></i></button>
+            </div>
+          );
+        },
+      },
     ];
+    const getRowId = (row) => row.client_id;
     const fetchClients = async () => {
         try {
             setLoading(true);
@@ -30,12 +43,13 @@ const ListClients = () => {
                 Authorization: 'Token '+localStorage.getItem("token"),
             };
             const response = await axios.get('clients/', { headers });
-            console.log(response.data);
-            setData(response.data);
+            let results = response.data;
+            setData(results);
             setLoading(false);
+
         } catch (error) {
-            setError(error);
             setLoading(false);
+            toast.error("Something went wrong");
         }
     };
     const deleteClient = (client_id) => {
@@ -48,35 +62,46 @@ const ListClients = () => {
         cancelButtonText: 'No',
       }).then((result) => {
         if (result.isConfirmed) {
-            const headers = {
-              'Content-Type': 'application/json',
-              Authorization: 'Token '+localStorage.getItem("token"),
-            };
-            setLoading(true);
-              axios
-              .delete('client/'+client_id+'/', { headers })
-              .then((response) => {
-                var res = response.data;
-                console.log(res);
-                if(res.status == 'Client Deleted'){
-                    toast.success('Client deleted successfully');
-                    fetchClients();
-                }else{
-                  toast.error('Something went wrong');
-                }
-              })
-      
-              .catch((error) => {
-                // Handle any errors
-                console.error('Error saving form data:', error);
-              });
-        } else if (result.dismiss === Swal.DismissReason.cancel) {
-          // User clicked "No" or closed the dialog
-          Swal.fire('Cancelled', 'Your action was cancelled.', 'error');
+          const headers = {
+            'Content-Type': 'application/json',
+            Authorization: 'Token '+localStorage.getItem("token"),
+          };
+          setLoading(true);
+            axios
+            .delete('client/'+client_id+'/', { headers })
+            .then((response) => {
+              var res = response.data;
+              if(res.status === 'Client Deleted'){
+                  toast.success('Client deleted successfully');
+                  fetchClients();
+              }else{
+                toast.error('Something went wrong');
+              }
+            })
+            .catch((error) => {
+              setLoading(false);
+              toast.error("Something went wrong");
+            });
         }
       });
     }
     useEffect(() => {
+      window.addEventListener('error', e => {
+        if (e.message === 'ResizeObserver loop limit exceeded' || e.message === 'Script error.') {
+          const resizeObserverErrDiv = document.getElementById(
+            'webpack-dev-server-client-overlay-div'
+          )
+          const resizeObserverErr = document.getElementById(
+            'webpack-dev-server-client-overlay'
+          )
+          if (resizeObserverErr) {
+            resizeObserverErr.setAttribute('style', 'display: none');
+          }
+          if (resizeObserverErrDiv) {
+            resizeObserverErrDiv.setAttribute('style', 'display: none');
+          }
+        }
+      })
         fetchClients();
     }, []);
   return (
@@ -95,44 +120,25 @@ const ListClients = () => {
         <div className="container-fluid">
           <fieldset className='form-fieldset'>
             <legend className="pl-0">Clients</legend>
-            <div className="records-list mt-3">
-              {/* <DataGrid columns={columns} rows={data} /> */}
-                <table className="table table-bordered table-striped">
-                    <thead>
-                        <tr>
-                        <th className="text-nowrap">Client ID</th>
-                        <th className="text-nowrap">Client Name</th>
-                        <th className="text-nowrap">Contact Name</th>
-                        <th className="text-nowrap">Contact Number</th>
-                        <th className="text-nowrap">Last Order Date</th>
-                        <th className="text-nowrap">Last Order Amount</th>
-                        <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    {records ? (records.map((item) => (
-                    <tr key={item.client_id}>
-                        <td>{item.client_id}</td>
-                        <td>{item.client_name}</td>
-                        <td>{item.contact_name}</td>
-                        <td>{item.contact_no}</td>
-                        <td>{item.last_order_date}</td>
-                        <td>{item.last_order_amount}</td>
-                        <td>
-                            <div className="btn-group">
-                                <Link to={`/clients/edit/${item.client_id}`} className="btn btn-warning btn-sm mr-2"><i className="fa fa-edit"></i></Link>
-                                <button onClick={() => deleteClient(item.client_id)} type='button' className="btn btn-danger btn-sm"><i className="fa fa-trash"></i></button>
-                            </div>
-                        </td>
-                    </tr>
-                    ))
-                    ):(<tr>
-                      <td colSpan="7">
-                        <div className='text-center'><i className='fa fa-spin fa-spinner'></i> Fetching records...</div>
-                      </td>
-                    </tr>)}
-                    </tbody>
-                </table>
+            <div className="records-list mt-3" style={{ height: 400, width: '100%' }}>
+            <Box sx={{ width: '100%' }}>
+            <DataGrid
+              rows={records}
+              columns={columns}
+              getRowId={getRowId}
+              pageSize={pageSize}
+              initialState={{
+                pagination: {
+                  paginationModel: {
+                    pageSize: 10,
+                  },
+                },
+              }}
+              pageSizeOptions={[10,20,50,100]}
+              disableRowSelectionOnClick
+       
+            />
+            </Box>
             </div>      
           </fieldset>
         </div>

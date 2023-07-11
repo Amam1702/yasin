@@ -6,8 +6,7 @@ const Sidebar = () => {
   return (
     <aside className="main-sidebar sidebar-dark-primary">
     <Link to="/" className="brand-link">
-      {/* <img src="dist/img/AdminLTELogo.png" alt="AdminLTE Logo" className="brand-image img-circle elevation-3" style="opacity: .8"> */}
-      <img src={Logo} className="brand-image" />
+      <img src={Logo} className="brand-image" alt="Logo" />
       <span className="brand-text font-weight-light h4">Conex</span>
     </Link>
     <div className="sidebar">

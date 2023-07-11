@@ -114,3 +114,10 @@ fieldset.form-fieldset {
   height: 2.5rem;
   position: relative;
 }
+
+p.MuiTablePagination-displayedRows {
+  margin-bottom: 0px !important;
+}
+.MuiTablePagination-selectLabel {
+  margin-bottom: 0px;
+}

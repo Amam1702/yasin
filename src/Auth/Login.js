@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import Logo from '../assets/logo.png';
-import PageLoader from '../PageLoader';
 import axios from 'axios';
 
 const Login = () => {
@@ -12,7 +11,7 @@ const Login = () => {
       if(isLoggedIn){
         navigate("/");
       }
-  }, []);
+  }, [isLoggedIn]);
  
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
@@ -53,7 +52,6 @@ const Login = () => {
         .post('https://seashell-app-cthwc.ondigitalocean.app/api-token-auth/', formData, { headers })
         .then((response) => {
           let res = response.data;
-          const errors = {};
           setLoading(false);
           if(res.token !== undefined){
             toast.success("Login successfully");
@@ -65,8 +63,6 @@ const Login = () => {
         })
         .catch((error) => {
           setLoading(false);
-          // Handle any errors
-          // let res = error.data;
           if( error.response ){
               let res = error.response.data;
               console.log("error response: ",res); // => the response payload 
@@ -83,7 +79,7 @@ const Login = () => {
     <div className="hold-transition login-page">
      <div className="login-box">
         <div className="login-logo">
-            <div><img src={Logo} width="50" /><b>Conex</b><span className='text-danger'>Login</span></div>
+            <div><img src={Logo} width="50" alt="Logo" /><b>Conex</b><span className='text-danger'>Login</span></div>
         </div>
         <div className="card">
             <div className="card-body login-card-body">

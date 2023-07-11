@@ -24,7 +24,6 @@ const CreateVoucher = () => {
   });
   const [formErrors, setFormErrors] = useState({
     initial_amount: '',
-    initial_amount: '',
     balance:'',
     start_date:'',
     end_date:'',
@@ -102,7 +101,7 @@ const CreateVoucher = () => {
             Object.keys(data).forEach(function(k) {
               var itemData = data[k];
               Object.keys(data[k]).forEach(function(key) {
-                if(itemData[key] == "created"){
+                if(itemData[key] === "created"){
                   is_created = true;
                 }
               })
@@ -131,7 +130,7 @@ const CreateVoucher = () => {
                   })
                 })
               });
-              if(error_message != ''){
+              if(error_message !== ''){
                 errors.error_message = error_message;
                 setFormErrors(errors);
               }

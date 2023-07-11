@@ -13,8 +13,6 @@ const EditVoucher = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [client_id, setClientId] = useState(null);
   const [clients, setClients] = useState([]);
   const [formData, setFormData] = useState({
     voucher_id: '',
@@ -60,6 +58,7 @@ const EditVoucher = () => {
     
     } catch (error) {
         setLoading(false);
+        toast.error("Something went wrong");
     }
   };
   const fetchVoucher = async (voucher_id) => {
@@ -73,17 +72,16 @@ const EditVoucher = () => {
           setFormData(response.data);
           setStartDate(new Date(response.data.start_date));
           setEndDate(new Date(response.data.end_date));
-          setClientId(response.data.client_id);
           setLoading(false);
       } catch (error) {
-          setError(error);
           setLoading(false);
+          toast.error("Something went wrong");
       }
   };
   useEffect(() => {
     fetchVoucher(id);
     fetchClients()
-  }, []);
+  }, [id]);
 
   
   const handleChange = (e) => {
@@ -125,7 +123,6 @@ const EditVoucher = () => {
     setFormErrors(errors);
 
     if (Object.keys(errors).length === 0) {
-        var postData = [formData] ;
         const headers = {
           'Content-Type': 'application/json',
           Authorization: 'Token '+localStorage.getItem("token"),
@@ -135,8 +132,6 @@ const EditVoucher = () => {
         axios
         .put('vouchers/'+id+'/', formData, { headers })
         .then((response) => {
-        
-          
           var data = response.data;
           let is_created = false;
           if(data['status'] === 'Data Updated'){
@@ -147,7 +142,6 @@ const EditVoucher = () => {
                navigate("/vouchers");
             }else{
               setLoading(false);
-              const errors = {};
               Object.keys(data).forEach(function(k) {
                 var itemData = data[k];
                 let errors = {};
@@ -163,7 +157,7 @@ const EditVoucher = () => {
                     // }
                   })
                 })
-                if(error_message != ''){
+                if(error_message !== ''){
                   errors.error_message = error_message;
                   setFormErrors(errors);
                 }

@@ -102,7 +102,7 @@ const CreateClient = () => {
             Object.keys(data).forEach(function(k) {
               var itemData = data[k];
               Object.keys(data[k]).forEach(function(key) {
-                if(itemData[key] == "Created Client"){
+                if(itemData[key] === "Created Client"){
                   is_created = true;
                 }
               })

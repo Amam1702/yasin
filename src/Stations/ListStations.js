@@ -1,29 +1,44 @@
 import React, { useEffect, useState } from 'react';
 import Swal from 'sweetalert2';
 import { Link } from 'react-router-dom';
-// import 'react-data-grid/lib/styles.css';
-// import DataGrid from 'react-data-grid';
 
+import Box from '@mui/material/Box';
+import { DataGrid } from '@mui/x-data-grid';
+import PageLoader from '../PageLoader';
 
 import { toast } from 'react-toastify';
 import axios from 'axios';
 
 const ListStations = () => {
-    const [records, setData] = useState(null);
+    const [records, setData] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
 
-  
+    const pageSize = 10; 
     const columns = [
-      { name: 'Station ID', key: 'station_id' },
-      { name: 'Location', key: 'location' },
-      { name: 'Station Name', key: 'station_name' },
-      { name: 'Email', key: 'email' },
-      { name: 'Phone', key: 'phone' },
-      { name: 'Fuel Type', key: 'fuel_type' },
-      { name: 'Operated Hours', key: 'operated_hours' },
-      { name: 'Created Time', key: 'created_time' },
+      { headerName: 'Station ID', field: 'station_id', width: 100 },
+      { headerName: 'Location', field: 'location', width: 100 },
+      { headerName: 'Station Name', field: 'station_name', width: 100 },
+      { headerName: 'Email', field: 'email', width: 100 },
+      { headerName: 'Phone', field: 'phone' },
+      { headerName: 'Fuel Type', field: 'fuel_type', width: 100 },
+      { headerName: 'Operated Hours', field: 'operated_hours', width: 100 },
+      { headerName: 'Created Time', field: 'created_time', width: 100 },
+      {
+        field: 'actions',
+        headerName: 'Actions',
+        width: 130,
+        sortable: false,
+        renderCell: (params) => {
+          return (
+            <div className="btn-group">
+                <Link to={`/stations/edit/${params.row.station_id}`} className="btn btn-warning btn-sm mr-2"><i className="fa fa-edit"></i></Link>
+                <button onClick={() => deleteStation(params.row.station_id)} type='button' className="btn btn-danger btn-sm"><i className="fa fa-trash"></i></button>
+            </div>
+          );
+        },
+      },
     ];
+    const getRowId = (row) => row.station_id;
     const fetchStations = async () => {
         try {
 
@@ -33,12 +48,11 @@ const ListStations = () => {
                 Authorization: 'Token '+localStorage.getItem("token"),
             };
             const response = await axios.get('stations/', { headers });
-            console.log(response.data);
             setData(response.data);
             setLoading(false);
         } catch (error) {
-            setError(error);
             setLoading(false);
+            toast.error('Something went wrong');
         }
     };
     const deleteStation = (station_id) => {
@@ -59,16 +73,15 @@ const ListStations = () => {
               axios
               .delete('station/'+station_id+'/', { headers })
               .then((response) => {
+                setLoading(false);
                 var res = response.data;
-                console.log(res);
-                if(res.status == 'User Deleted'){
+                if(res.status === 'User Deleted'){
                     toast.success('Station deleted successfully');
                     fetchStations();
                 }else{
                   toast.error('Something went wrong');
                 }
               })
-      
               .catch((error) => {
                 // Handle any errors
                 setLoading(false);
@@ -82,6 +95,7 @@ const ListStations = () => {
     }, []);
   return (
     <div className="p-3">
+      {loading &&<PageLoader />}
       <section className="content">
         <div className="content-header">
           <div className="container-fluid">
@@ -96,8 +110,25 @@ const ListStations = () => {
           <fieldset className='form-fieldset'>
             <legend className="pl-0">Stations</legend>
             <div className="records-list mt-3">
-              {/* <DataGrid columns={columns} rows={data} /> */}
-                <table className="table table-bordered table-striped">
+            <Box sx={{ width: '100%' }}>
+            <DataGrid
+              rows={records}
+              columns={columns}
+              getRowId={getRowId}
+              pageSize={pageSize}
+              initialState={{
+                pagination: {
+                  paginationModel: {
+                    pageSize: 10,
+                  },
+                },
+              }}
+              pageSizeOptions={[10,20,50,100]}
+              disableRowSelectionOnClick
+       
+            />
+            </Box>
+                {/* <table className="table table-bordered table-striped">
                     <thead>
                         <tr>
                         <th className="text-nowrap">Station ID</th>
@@ -134,7 +165,7 @@ const ListStations = () => {
                       </td>
                     </tr>)}
                     </tbody>
-                </table>
+                </table> */}
             </div>      
           </fieldset>
         </div>

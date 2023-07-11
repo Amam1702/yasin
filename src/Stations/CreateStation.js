@@ -1,8 +1,5 @@
 import React, { useState } from 'react';
 import { useNavigate,Link } from 'react-router-dom';
-import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
-
 import { toast } from 'react-toastify';
 import axios from 'axios';
 
@@ -87,7 +84,7 @@ const CreateStation = () => {
             Object.keys(data).forEach(function(k) {
               var itemData = data[k];
               Object.keys(data[k]).forEach(function(key) {
-                if(itemData[key] == "Station Created"){
+                if(itemData[key] === "Station Created"){
                   is_created = true;
                 }
               })

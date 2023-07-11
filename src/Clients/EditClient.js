@@ -13,7 +13,6 @@ const EditClient = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
   const [formData, setFormData] = useState({
     client_id:id,
     client_name: '',
@@ -39,12 +38,12 @@ const EditClient = () => {
             setSelectedDate(new Date(response.data.last_order_date));
             setLoading(false);
         } catch (error) {
-            setError(error);
             setLoading(false);
+            toast.error('Something went wrong');
         }
     };
     fetchClient(id);
-  }, []);
+  }, [id]);
 
   const [formErrors, setFormErrors] = useState({
     client_name: '',
@@ -114,7 +113,7 @@ const EditClient = () => {
         .then((response) => {
           console.log(response.status);
           var res = response.data;
-          if(res.status == 'Data Updated'){
+          if(res.status === 'Data Updated'){
               toast.success('Record updated successfully');
               navigate("/clients");
           }else{
@@ -124,7 +123,7 @@ const EditClient = () => {
 
         .catch((error) => {
           // Handle any errors
-          console.error('Error saving form data:', error);
+          toast.error('Something went wrong');
         });
     }
   };

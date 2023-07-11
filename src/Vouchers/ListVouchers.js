@@ -6,11 +6,13 @@ import { toast } from 'react-toastify';
 import axios from 'axios';
 import CSVReader from 'react-csv-reader';
 import { Button,Modal } from 'react-bootstrap';
+import Box from '@mui/material/Box';
+import { DataGrid } from '@mui/x-data-grid';
+
 import sampleCsv from './sample-csv.csv';
 const ListVouchers = () => {
-    const [records, setData] = useState(null);
+    const [records, setData] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
     const [csvKey, setCsvKey] = useState(0);
     const [showModal, setShowModal] = useState(false);
     const csvImporRef = useRef(null);
@@ -46,7 +48,7 @@ const ListVouchers = () => {
     };
 
     const handleCsvImport = () => {
-      if(csvData.length == 0){
+      if(csvData.length === 0){
         toast.error("Please select the csv file to import");
       }else{
         const headers = {
@@ -72,7 +74,7 @@ const ListVouchers = () => {
           Object.keys(data).forEach(function(k) {
             var itemData = data[k];
             Object.keys(data[k]).forEach(function(key) {
-              if(itemData[key] == 'created'){
+              if(itemData[key] === 'created'){
                 success_message +=  key+":"+itemData[key]+"<br>";
               }else{
                 Object.keys(itemData[key]).forEach(function(key2) {
@@ -81,10 +83,10 @@ const ListVouchers = () => {
               }
             })
           });
-          if(error_message != ''){
+          if(error_message !== ''){
             import_response.error_message = error_message
           }
-          if(success_message != ''){
+          if(success_message !== ''){
             import_response.success_message = success_message
           }
           setCsvData([]);
@@ -101,15 +103,31 @@ const ListVouchers = () => {
     const handleCloseModal = () => {
       setShowModal(false);
     };
+    const pageSize = 10; 
     const columns = [
-      { name: 'Voucher ID', key: 'voucher_id' },
-      { name: 'Initial Amount', key: 'initial_amount' },
-      { name: 'Balance', key: 'balance' },
-      { name: 'Last Used', key: 'last_used' },
-      { name: 'Start Date', key: 'start_date' },
-      { name: 'End Date', key: 'end_date' },
-      { name: 'Status', key: 'status' },
+      { headerName: 'Voucher ID', field: 'voucher_id', width: 200 },
+      { headerName: 'Initial Amount', field: 'initial_amount', width: 130 },
+      { headerName: 'Balance', field: 'balance', width: 100 },
+      { headerName: 'Last Used', field: 'last_used', width: 100 },
+      { headerName: 'Start Date', field: 'start_date', width: 100 },
+      { headerName: 'End Date', field: 'end_date', width: 100 },
+      { headerName: 'Status', field: 'status', width: 100 },
+      {
+        field: 'actions',
+        headerName: 'Actions',
+        width: 130,
+        sortable: false,
+        renderCell: (params) => {
+          return (
+            <div className="btn-group">
+                <Link to={`/vouchers/edit/${params.row.voucher_id}`} className="btn btn-warning btn-sm mr-2"><i className="fa fa-edit"></i></Link>
+                <button onClick={() => deleteVoucher(params.row.voucher_id)} type='button' className="btn btn-danger btn-sm"><i className="fa fa-trash"></i></button>
+            </div>
+          );
+        },
+      },
     ];
+    const getRowId = (row) => row.voucher_id;
     const fetchVouchers = async () => {
         try {
             setLoading(true);
@@ -122,8 +140,8 @@ const ListVouchers = () => {
             setLoading(false);
             
         } catch (error) {
-            setError(error);
             setLoading(false);
+            toast.error('Something went wrong');
         }
     };
     
@@ -149,7 +167,7 @@ const ListVouchers = () => {
                
                 var res = response.data;
                 console.log(res);
-                if(res.status == 'Voucher Deleted'){
+                if(res.status === 'Voucher Deleted'){
                     toast.success('Voucher deleted successfully');
                     fetchVouchers();
                 }else{
@@ -186,7 +204,25 @@ const ListVouchers = () => {
           <fieldset className='form-fieldset'>
             <legend className="pl-0">Vouchers</legend>
             <div className="records-list mt-3">
-                <table className="table table-bordered table-striped">
+            <Box sx={{ width: '100%' }}>
+            <DataGrid
+              rows={records}
+              columns={columns}
+              getRowId={getRowId}
+              pageSize={pageSize}
+              initialState={{
+                pagination: {
+                  paginationModel: {
+                    pageSize: 10,
+                  },
+                },
+              }}
+              pageSizeOptions={[10,20,50,100]}
+              disableRowSelectionOnClick
+       
+            />
+            </Box>
+                {/* <table className="table table-bordered table-striped">
                     <thead>
                         <tr>
                         <th className="text-nowrap">Voucher ID</th>
@@ -223,7 +259,7 @@ const ListVouchers = () => {
                       </td>
                     </tr>)}
                     </tbody>
-                </table>
+                </table> */}
             </div>      
           </fieldset>
         </div>

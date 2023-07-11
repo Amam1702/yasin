@@ -13,8 +13,6 @@ const EditAttendant = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [client_id, setClientId] = useState(null);
   const [clients, setClients] = useState([]);
   const [formData, setFormData] = useState({
     voucher_id: '',
@@ -70,23 +68,21 @@ const EditAttendant = () => {
           };
           const response = await axios.get('vouchers/'+voucher_id+'/', { headers });
           setFormData(response.data);
-          if(response.data.start_date != ''){
+          if(response.data.start_date !== ''){
             setStartDate(new Date(response.data.start_date));
           }
-          if(response.data.end_date != ''){
+          if(response.data.end_date !== ''){
             setEndDate(new Date(response.data.end_date));
           }
-          setClientId(response.data.client_id);
           setLoading(false);
       } catch (error) {
-          setError(error);
           setLoading(false);
       }
   };
   useEffect(() => {
     fetchAttendant(id);
     fetchClients()
-  }, []);
+  }, [id]);
 
   
   const handleChange = (e) => {
@@ -128,7 +124,6 @@ const EditAttendant = () => {
     setFormErrors(errors);
 
     if (Object.keys(errors).length === 0) {
-        var postData = [formData] ;
         const headers = {
           'Content-Type': 'application/json',
           Authorization: 'Token '+localStorage.getItem("token"),
@@ -166,7 +161,7 @@ const EditAttendant = () => {
                   })
                 })
               });
-              if(error_message != ''){
+              if(error_message !== ''){
                 errors.error_message = error_message;
                 setFormErrors(errors);
               }

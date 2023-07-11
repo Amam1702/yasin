@@ -2,6 +2,9 @@ import React, { useEffect, useState } from 'react';
 import Swal from 'sweetalert2';
 import { Link } from 'react-router-dom';
 
+import Box from '@mui/material/Box';
+import { DataGrid } from '@mui/x-data-grid';
+
 import PageLoader from '../PageLoader';
 
 
@@ -9,20 +12,35 @@ import { toast } from 'react-toastify';
 import axios from 'axios';
 
 const ListAttendants = () => {
-    const [records, setData] = useState(null);
+    const [records, setData] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
 
-  
+
+    const pageSize = 10; 
     const columns = [
-      { name: 'Attendant ID', key: 'atdt_id' },
-      { name: 'First Name', key: 'first_name' },
-      { name: 'Last Name', key: 'last_name' },
-      { name: 'Employee Id', key: 'employee_id' },
-      { name: 'Location Id', key: 'location_id' },
-      { name: 'Vouchers', key: 'vouchers' },
-      { name: 'Profile', key: 'profile' },
+      { headerName: 'Attendant ID', field: 'atdt_id', width: 100 },
+      { headerName: 'First Name', field: 'first_name', width: 130 },
+      { headerName: 'Last Name', field: 'last_name', width: 130 },
+      { headerName: 'Employee Id', field: 'employee_id', width: 130 },
+      { headerName: 'Location Id', field: 'location_id', width: 150 },
+      { headerName: 'Vouchers', field: 'vouchers', width: 80 },
+      { headerName: 'Profile', field: 'profile', width: 150 },
+      {
+        field: 'actions',
+        headerName: 'Actions',
+        width: 100,
+        sortable: false,
+        renderCell: (params) => {
+          return (
+            <div className="btn-group">
+                <Link to={`/attendants/edit/${params.row.atdt_id}`} className="btn btn-warning btn-sm mr-2"><i className="fa fa-edit"></i></Link>
+                <button onClick={() => deleteAttendant(params.row.atdt_id)} type='button' className="btn btn-danger btn-sm"><i className="fa fa-trash"></i></button>
+            </div>
+          );
+        },
+      },
     ];
+    const getRowId = (row) => row.atdt_id;
     const fetchAttendants = async () => {
         try {
             setLoading(true);
@@ -34,7 +52,6 @@ const ListAttendants = () => {
             setData(response.data);
             setLoading(false);
         } catch (error) {
-            setError(error);
             setLoading(false);
         }
     };
@@ -61,7 +78,7 @@ const ListAttendants = () => {
                
                 var res = response.data;
                 console.log(res);
-                if(res.status == 'Attendant Deleted'){
+                if(res.status === 'Attendant Deleted'){
                     toast.success('Voucher deleted successfully');
                     fetchAttendants();
                 }else{
@@ -70,7 +87,7 @@ const ListAttendants = () => {
               })
               .catch((error) => {
                 setLoading(false);
-                console.error('Error saving form data:', error);
+                toast.error('Something went wrong');
               });
         }
       });
@@ -95,8 +112,25 @@ const ListAttendants = () => {
           <fieldset className='form-fieldset'>
             <legend className="pl-0">Attendants</legend>
             <div className="records-list mt-3">
-              {/* <DataGrid columns={columns} rows={data} /> */}
-                <table className="table table-bordered table-striped">
+              <Box sx={{ width: '100%' }}>
+              <DataGrid
+                rows={records}
+                columns={columns}
+                getRowId={getRowId}
+                pageSize={pageSize}
+                initialState={{
+                  pagination: {
+                    paginationModel: {
+                      pageSize: 10,
+                    },
+                  },
+                }}
+                pageSizeOptions={[10,20,50,100]}
+                disableRowSelectionOnClick
+        
+              />
+              </Box>
+                {/* <table className="table table-bordered table-striped">
                     <thead>
                         <tr>
                         <th className="text-nowrap">Attendant ID</th>
@@ -133,7 +167,7 @@ const ListAttendants = () => {
                       </td>
                     </tr>)}
                     </tbody>
-                </table>
+                </table> */}
             </div>      
           </fieldset>
         </div>

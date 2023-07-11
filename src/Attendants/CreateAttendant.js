@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from 'react';
 
 import { useNavigate,Link } from 'react-router-dom';
-import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
 
 import { toast } from 'react-toastify';
 import axios from 'axios';
@@ -110,7 +108,7 @@ const CreateAttendant = () => {
         fdata.append('location_id', formData.location_id);
         fdata.append('password', formData.password);
         fdata.append('vouchers', formData.vouchers);
-        if(formData.profile != ''){
+        if(formData.profile !== ''){
           fdata.append('profile', formData.profile);
         }
         console.log("DATA",fdata);
@@ -136,7 +134,7 @@ const CreateAttendant = () => {
             Object.keys(data).forEach(function(k) {
               var itemData = data[k];
               Object.keys(data[k]).forEach(function(key) {
-                if(itemData[key] == "Attendant Created"){
+                if(itemData[key] === "Attendant Created"){
                   is_created = true;
                 }
               })
@@ -158,7 +156,7 @@ const CreateAttendant = () => {
                 })
               });
               setLoading(false);
-              if(error_message != ''){
+              if(error_message !== ''){
                 errors.error_message = error_message;
                 setFormErrors(errors);
               }
